@@ -1,0 +1,203 @@
+#####Inicio de nova aplicação
+#####Guia referente ao segundo módulo do bootcamp Gostack (Iniciando Back-end do GoBarber)
+
+----Configurando Estrutura
+
+- Criação de projeto: 
+Buscar pasta onde se deseja criar o projeto e rodar o comando:
+
+####: yarn init -y    
+
+Irá criar o projeto e o arquivo package.json
+
+-Acessar a pasta via VScode.
+
+-Iniciar instalando a depência 'Express':
+Rodar o comando:
+
+####: yarn add express
+
+-Criar pasta src. Pasta irá conter todo o código da aplicação (Questão de organização)
+-Na raiz de src criar arquivos:
+server.js
+routes.js
+app.js
+
+-O arquivo app será usado para configurar o servido express.
+
+----No arquivo app.js:
+
+importar o express (OBS.: Sem o Sucrase terá que ser usado a sintaxe de require)
+importar as rotas do arquivo de rotas
+
+Definir uma classe App
+  constructor: 
+    terá o atributo server como instância de express;
+    chamar os métodos middlewares e routes;
+
+-Por enquanto a classe terá os métodos:
+middlewares()
+  -Irá conter todos os middlewares da aplicação.
+  iniciar com middleware para a aplicação receber as requisições em Json
+
+routes()
+  chamar método use do server passando routes como parâmetro
+  'this.server.use(routes)'
+
+exportar uma nova instancia de App().server
+
+----No arquivo server.js:
+Importar a intancia do arquivo app
+iniciar o servidor na porta 3333
+
+----No arquivo routes.js:
+Importar o Router do express
+
+criar uma nova variável 'routes' como uma instancia de Router.
+
+exportar arquivo routes para exportar as rotas.
+
+
+----Nodemon e Sucrase
+
+Sucrase tem a funcionalidade de fazer o Node entender algumas novas sintaxes do js
+Nodemon tem a funcionalidade de detectar alterações no código e reiniciar o servidor de maneira automática.
+
+Adicionando Nodemon e Sucrase como depêndencia da aplicação para o ambientee de desenvolvimento:
+
+yarn add sucrase nodemon -D
+
+Com o Sucrase o node irá entender a sintaxe usando import além de require para importar
+Também irá entender a sintaxe de export default além de module.exports
+
+Configurando Nodemon e Sucrase:
+
+-Dentro de package.json:
+
+Criar propriedade "scripts"
+  criar comando: "dev": "nodemon src/server.js"
+
+Para rodar o projeto com o sucrase-node:
+
+criar arquivo node.json na raiz do projeto
+
+  Criar um objeto com o seguinte formato:
+  {
+    "execMap":{
+      "js": "node -r sucrase/register"
+    }
+  }
+
+  Para todo o arquivo que tiver o final .js ele erá rodar o node porém irá executar o sucrase/register antes de inicializar a aplicação
+
+O sucrase irá alterar a maneira de debugar a aplciação com o VScode, será necessário configurar isso.
+  Dentro de package.json na propriedade scrips:
+    criar comando: "dev:debug": "nodemon --inspect src/server.js"
+
+  Rodar o comando: ####:   yarn dev:debug
+
+  Ir no campo de debug e criar nova configuração. No arquivo launch.json:
+    excluir o campo program
+    alterar campos para: "request": "attach"
+                         "protocol": "inspector"
+
+----Docker (Mais ou menos uma virtualização de serviços)
+-Criação de ambientes isolados (Container)
+-Containers expõe portas para comunicação
+-Imagens Serviço disponível do Docker
+-Container é uma instância de uma imagem
+-Docker hub, onde é possível encontrar as imagens do docker
+
+Comando para listar todos os comandos do docker: docker help
+Comando para listar os container em execução: docker ps
+Comando para listar todos os containers que estão na maquina: docker ps -a
+Comando para inicializar um container: docker start 'nome_do_container'
+
+----ESLint, Prettier, EditorConfig
+ESLint irá "checar" se nosso código está dentro dos padrões de desenvolvimento pré-estabelecido
+
+Para adicionar a depência ESLint rodar o seguinte comando:
+####:  yarn add eslint -D
+
+Para rodar o ESLint e criar o arquivo de configuração rodar o seguinte comando:
+####:  yarn eslint --init
+
+Responder as perguntas. (Estamos usando a style guide do AirB&B)
+
+Após rodar a configuração irá ser criado um arquivo "package-lock.json" que podemos descartar.
+Rodar o seguinte comando, na pasta do projeto, para fazer o mapeamento das novas dependencias:
+####:  yarn
+
+Irá ser gerado um arquivo .eslintrc.js, onde serão feitas as configurações.
+(Importante ter a extensão ESLint instalada no VScode)
+
+-Configurações do ESLint:
+  Acessar arquivo .eslintrc.js
+    Deixar o arquivo rules com a seguinte configuração:
+      rules:{
+        "class-methods-use-this": "off",
+        "no-param-reassign": "off",
+        "camelcase": "off",
+        "no-unuser-vars": ["error", {"argsIgnorePattern": "next"}],
+        },
+
+-Adicionar a dependênia prettier rodando o seguinte comando:
+####:  yarn add prettier eslint-config-prettier eslint-plugin-prettier -D
+
+-Após rodar o comando voltar ao arquivo .eslintrc.js
+    Deixar as propriedades extends e plugins da seguinte maneira:
+      extends: ['airbnb-base', 'prettier'],
+      plugin: ['prettier'],
+    
+    Nas rules adicionar o seguinte item:
+      "prettier/prettier": "error",
+
+-Criar arquivo .prettierrc, na raiz do projeto para sobrescrever regras duplicadas entre o ESLint e o prettier.
+  No arquivo .prettierrc deixar da seguinte maneira:
+  {
+    "singleQuote": true,
+    "trailingComma": "es5"
+  }
+
+----Configurando Sequelize e estruturar pastas da aplicação:
+
+-Criar pasta config dentro da pasta src --Onde ficarão a maioria das configurações da aplicação.
+  Dentro da pasta config criar arquivo database.js --Ficarão as credenciais para acessar a bse de dados.
+
+-Criar pasta migrations dentro da pasta database. --Tudo relativo à database, fora as configuraçẽos de conexão
+
+-Criar pasta app na raiz de src. 
+  Dentro de app criar pasta controllers e models
+
+-Instalar a depêndencia sequelize rodando o seguinte comando:
+  ####: yarn add sequelize
+
+-Instalar a dependênia sequelize cli:
+  ####: yarn add sequelize-cli -D
+
+-Criar arquivo do sequelize:
+  Na raiz do projeto criar arquivo: .sequelizerc --Esse arquivo vai exportar alguns caminho do projeto.
+  (Esse arquivo não consegue utilizar formato de import/export, utilizar require)
+
+-Deixar o arquivo com o seguinte formato:
+  const { resolve } = require('path');
+    module.exports = {
+      config: resolve(__dirname, 'src', 'config', 'database.js'),
+      'models-path': resolve(__dirname, 'src', 'app', 'models'),
+      'migrations-path': resolve(__dirname, 'src', 'database', 'migrations'),
+      'seeders-path': resolve(__dirname, 'src', 'database', 'seeds')
+    };
+
+-Configurando o arquivo database.js:
+  module.exports = {
+  dialect: 'postgres',
+  host: 'localhost',
+  username: 'postgres',
+  password: 'docker',
+  database: 'gobarber',
+  define: {
+    timestamps: true,
+    underscored: true,
+    underscoredAll: true,
+    },
+  };

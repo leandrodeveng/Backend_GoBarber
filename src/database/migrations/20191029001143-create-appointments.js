@@ -11,11 +11,6 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
-
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       user_id: {
         type: Sequelize.INTEGER,
         references: {
